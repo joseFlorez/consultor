@@ -1,0 +1,42 @@
+version: '3.3'
+
+services:
+  reverse-proxy:
+    image: "traefik:v2.1"
+    command: 
+      - "--api.insecure=true"
+      #- "--entrypoints.web-secure.address=:443"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  db:
+    image: mysql:5.7
+    container_name: agence_db
+    command: --default-authentication-plugin=mysql_native_password
+    #restart: always
+    volumes:
+      - ~/datamysql://var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+  phpmyadmin:
+    image: "phpmyadmin/phpmyadmin"
+    container_name: agence_phpmyadmin
+    links:
+      - db:db
+    ports:
+      - 8081:80
+  agence:
+    build:
+      context: .
+    container_name: agence
+    volumes:
+      - ./agence:/var/www/html
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.agence.rule=Host(`agence.localhost`)"
+
