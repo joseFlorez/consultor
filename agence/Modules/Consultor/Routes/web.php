@@ -13,4 +13,5 @@
 
 Route::prefix('consultor')->group(function() {
     Route::get('consultor', 'ConsultorController@listConsultor');
+    Route::get('relatorio', 'ConsultorController@relatorio');
 });
