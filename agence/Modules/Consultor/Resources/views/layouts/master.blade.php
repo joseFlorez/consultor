@@ -8,12 +8,16 @@
 
        {{-- Laravel Mix - CSS File --}}
        {{-- <link rel="stylesheet" href="{{ mix('css/consultor.css') }}"> --}}
+       <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+       <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
 
     </head>
     <body>
+        <div id="app">
         @yield('content')
 
         {{-- Laravel Mix - JS File --}}
-        {{-- <script src="{{ mix('js/consultor.js') }}"></script> --}}
+        </div>
+        <script src="{{ mix('js/app.js') }}"></script>
     </body>
 </html>

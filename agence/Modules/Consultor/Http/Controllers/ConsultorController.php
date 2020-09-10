@@ -24,7 +24,7 @@ class ConsultorController extends Controller
 
     public function listConsultor()
     {
-        return dd($this->getConsultores->exec());
+        return $this->getConsultores->exec();
     }
 
     public function relatorio()

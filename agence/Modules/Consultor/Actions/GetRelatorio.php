@@ -3,14 +3,20 @@
 namespace Modules\Consultor\Actions;
 
 use Modules\Consultor\Entities\Consultor;
+use Modules\Consultor\Actions\OrderData;
 
 class GetRelatorio {
 
     private $consultor;
+    private $orderData;
 
-    public function __construct(Consultor $consultor)
+    public function __construct(
+        Consultor $consultor,
+        OrderData  $orderData
+    )
     {
         $this->consultor = $consultor;
+        $this->orderData = $orderData;
     }
 
     public function exec()
@@ -21,23 +27,14 @@ class GetRelatorio {
         })
         ->join('cao_fatura', function($join){
             $join->on('cao_os.co_os','=','cao_fatura.co_os')
-            ->whereMonth('data_emissao','6');
+            ->whereBetween('data_emissao', ['2007-01-01', '2007-06-31']);
         })
+        ->join('cao_salario', function($join){
+            $join->on('cao_usuario.co_usuario','=','cao_salario.co_usuario');
+        })
+        ->orderBy('data_emissao', 'asc')
         ->get();
-        $relatorio = [];
-        foreach($data as $val){
-            if(!isset($relatorio[$val['co_usuario']])){
-                print $val['valor'] . ' - ' . $val['total_imp_inc']  . '<br>';
-                $relatorio[$val['co_usuario']] = [
-                    'co_usuario' => $val['co_usuario'],
-                    'valor' => ($val['valor']-($val['valor'] * ($val['total_imp_inc']/100)))
-                ];
-            } else {
-                print $val['valor'] . ' - ' . $val['total_imp_inc'] . ' - '. ($val['valor']-($val['valor'] * ($val['total_imp_inc']/100)))  .'<br>';
-                $relatorio[$val['co_usuario']]['valor'] += ($val['valor']-($val['valor'] * ($val['total_imp_inc']/100)));
-                //print $relatorio[$val['co_usuario']]['valor'] . '<br>';
-            }
-        }
-        dd($relatorio);
+        
+        return $this->orderData->exec($data);
     }
 }
