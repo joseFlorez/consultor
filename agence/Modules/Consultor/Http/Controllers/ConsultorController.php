@@ -27,8 +27,8 @@ class ConsultorController extends Controller
         return $this->getConsultores->exec();
     }
 
-    public function relatorio()
+    public function relatorio(Request $request)
     {
-        return $this->getRelatorio->exec();
+        return $this->getRelatorio->exec($request->data, $request->de, $request->a);
     }
 }

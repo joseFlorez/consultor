@@ -24,11 +24,86 @@
             multiple
             @change="viewValues()"
         ></v-autocomplete>
+        
+        <v-row>
+            <v-col
+                class="d-flex align-center"
+                cols="1"
+                sm="1"
+            >    
+                Periodo
+            </v-col>
+            <v-col
+                class="d-flex align-center"
+                cols="2"
+                sm="2"
+            >    
+                <v-select
+                    v-model="d_mes"
+                    class="float-left mr-2"
+                    dense
+                    :items="monthsFilter"
+                    item-text="text"
+                    item-value="num"
+                    label="mês"
+                ></v-select>
+            </v-col>
+            <v-col
+                class="d-flex align-center"
+                cols="2"
+                sm="2"
+            >
+                <v-select
+                    v-model="d_ano"
+                    class="float-left mr-2"
+                    dense
+                    :items="[2007, 2006, 2005, 2004, 2003]"
+                    label="ano"
+                ></v-select>
+            </v-col>
+            <v-col
+                class="d-flex align-center"
+                cols="1"
+                sm="1"
+            >
+            a
+            </v-col>
+            <v-col
+                class="d-flex align-center"
+                cols="2"
+                sm="2"
+            >
+                <v-select
+                    v-model="a_mes"
+                    class="float-left mr-2"
+                    dense
+                    :items="monthsFilter"
+                    item-text="text"
+                    item-value="num"
+                    label="mês"
+                ></v-select>
+            </v-col>
+            <v-col
+                class="d-flex align-center"
+                cols="2"
+                sm="2"
+            >
+                <v-select
+                    v-model="a_ano"
+                    class="float-left mr-2"
+                    dense
+                    :items="[2007, 2006, 2005, 2004, 2003]"
+                    label="ano"
+                ></v-select>
+            </v-col>
+        </v-row>
+        
         <div class="my-2">
-            <v-btn @click="relatorio()" small color="primary">Relatório</v-btn>
-            <v-btn @click="relatorio()" small color="primary">Gráfico</v-btn>
-            <v-btn @click="relatorio()" small color="primary">Pizza</v-btn>
+                <v-btn @click="relatorio()" small color="primary">Relatório</v-btn>
+                <v-btn @click="relatorio()" small color="primary">Gráfico</v-btn>
+                <v-btn @click="relatorio()" small color="primary">Pizza</v-btn>
         </div>
+        
         <v-simple-table
             dense
             v-for="item in items"
@@ -57,10 +132,10 @@
                 </tr>
                 <tr>
                     <td>SALDO</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>{{ calcSaldo(item.months, item, 'valor') }}</td>
+                    <td>{{ calcSaldo(item.months, item, 'brut_salario') }}</td>
+                    <td>{{ calcSaldo(item.months, item, 'comissao') }}</td>
+                    <td>{{ calcSaldo(item.months, item, 'lucro') }}</td>
                 </tr>
                 </tbody>
             </template>
@@ -78,7 +153,25 @@
         return {
           items: null,
           consultores: [],
-          values: []
+          values: [],
+          monthsFilter: [
+           { text: "Jan", num: '01'},
+           { text: "Feb", num: '02'},
+           { text: "Mar", num: '03'},
+           { text: "Apr", num: '04'},
+           { text: "May", num: '05'},
+           { text: "Jun", num: '06'},
+           { text: "Jul", num: '07'},
+           { text: "Aug", num: '08'},
+           { text: "Sep", num: '09'},
+           { text: "Oct", num: '10'},
+           { text: "Nov", num: '11'},
+           { text: "Dec", num: '12'}
+          ],
+          d_ano: null,
+          d_mes: null,
+          a_ano: null,
+          a_mes: null
         }
       },
       methods: {
@@ -86,9 +179,17 @@
         {
             return Intl.NumberFormat("pt-BR", {style: 'currency', currency: 'BRL'}).format(value);
         },
-        calcSaldo: function()
+        calcSaldo: function(months, item, target)
         {
-            return ;
+            var valor = 0;
+            for(var i in months) {
+                if(target != 'brut_salario'){
+                    valor += months[i][target];
+                } else {
+                    valor += item.brut_salario;
+                }
+            }
+            return this.formatCurrency(valor);
         },
         viewValues: function()
         {
@@ -96,7 +197,9 @@
         },
         relatorio: function()
         {
-            axios.get('consultor/relatorio')
+            var de = this.d_ano + '-' + this.d_mes + '-01';
+            var a  = this.a_ano + '-' + this.a_mes + '-31';
+            axios.get('consultor/relatorio?data='+this.values+'&de='+de+'&a='+a)
             .then(res => {
                 this.items = res.data;
             });

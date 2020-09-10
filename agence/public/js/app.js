@@ -1980,6 +1980,81 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js")["default"];
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -1987,7 +2062,48 @@ var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js")["d
     return {
       items: null,
       consultores: [],
-      values: []
+      values: [],
+      monthsFilter: [{
+        text: "Jan",
+        num: '01'
+      }, {
+        text: "Feb",
+        num: '02'
+      }, {
+        text: "Mar",
+        num: '03'
+      }, {
+        text: "Apr",
+        num: '04'
+      }, {
+        text: "May",
+        num: '05'
+      }, {
+        text: "Jun",
+        num: '06'
+      }, {
+        text: "Jul",
+        num: '07'
+      }, {
+        text: "Aug",
+        num: '08'
+      }, {
+        text: "Sep",
+        num: '09'
+      }, {
+        text: "Oct",
+        num: '10'
+      }, {
+        text: "Nov",
+        num: '11'
+      }, {
+        text: "Dec",
+        num: '12'
+      }],
+      d_ano: null,
+      d_mes: null,
+      a_ano: null,
+      a_mes: null
     };
   },
   methods: {
@@ -1997,8 +2113,18 @@ var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js")["d
         currency: 'BRL'
       }).format(value);
     },
-    calcSaldo: function calcSaldo() {
-      return;
+    calcSaldo: function calcSaldo(months, item, target) {
+      var valor = 0;
+
+      for (var i in months) {
+        if (target != 'brut_salario') {
+          valor += months[i][target];
+        } else {
+          valor += item.brut_salario;
+        }
+      }
+
+      return this.formatCurrency(valor);
     },
     viewValues: function viewValues() {
       console.log(this.values);
@@ -2006,7 +2132,9 @@ var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js")["d
     relatorio: function relatorio() {
       var _this = this;
 
-      axios.get('consultor/relatorio').then(function (res) {
+      var de = this.d_ano + '-' + this.d_mes + '-01';
+      var a = this.a_ano + '-' + this.a_mes + '-31';
+      axios.get('consultor/relatorio?data=' + this.values + '&de=' + de + '&a=' + a).then(function (res) {
         _this.items = res.data;
       });
     }
@@ -3177,6 +3305,138 @@ var render = function() {
               }),
               _vm._v(" "),
               _c(
+                "v-row",
+                [
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "d-flex align-center",
+                      attrs: { cols: "1", sm: "1" }
+                    },
+                    [_vm._v("    \n            Periodo\n        ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "d-flex align-center",
+                      attrs: { cols: "2", sm: "2" }
+                    },
+                    [
+                      _c("v-select", {
+                        staticClass: "float-left mr-2",
+                        attrs: {
+                          dense: "",
+                          items: _vm.monthsFilter,
+                          "item-text": "text",
+                          "item-value": "num",
+                          label: "mês"
+                        },
+                        model: {
+                          value: _vm.d_mes,
+                          callback: function($$v) {
+                            _vm.d_mes = $$v
+                          },
+                          expression: "d_mes"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "d-flex align-center",
+                      attrs: { cols: "2", sm: "2" }
+                    },
+                    [
+                      _c("v-select", {
+                        staticClass: "float-left mr-2",
+                        attrs: {
+                          dense: "",
+                          items: [2007, 2006, 2005, 2004, 2003],
+                          label: "ano"
+                        },
+                        model: {
+                          value: _vm.d_ano,
+                          callback: function($$v) {
+                            _vm.d_ano = $$v
+                          },
+                          expression: "d_ano"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "d-flex align-center",
+                      attrs: { cols: "1", sm: "1" }
+                    },
+                    [_vm._v("\n        a\n        ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "d-flex align-center",
+                      attrs: { cols: "2", sm: "2" }
+                    },
+                    [
+                      _c("v-select", {
+                        staticClass: "float-left mr-2",
+                        attrs: {
+                          dense: "",
+                          items: _vm.monthsFilter,
+                          "item-text": "text",
+                          "item-value": "num",
+                          label: "mês"
+                        },
+                        model: {
+                          value: _vm.a_mes,
+                          callback: function($$v) {
+                            _vm.a_mes = $$v
+                          },
+                          expression: "a_mes"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "d-flex align-center",
+                      attrs: { cols: "2", sm: "2" }
+                    },
+                    [
+                      _c("v-select", {
+                        staticClass: "float-left mr-2",
+                        attrs: {
+                          dense: "",
+                          items: [2007, 2006, 2005, 2004, 2003],
+                          label: "ano"
+                        },
+                        model: {
+                          value: _vm.a_ano,
+                          callback: function($$v) {
+                            _vm.a_ano = $$v
+                          },
+                          expression: "a_ano"
+                        }
+                      })
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
                 "div",
                 { staticClass: "my-2" },
                 [
@@ -3306,13 +3566,53 @@ var render = function() {
                                 _c("tr", [
                                   _c("td", [_vm._v("SALDO")]),
                                   _vm._v(" "),
-                                  _c("td"),
+                                  _c("td", [
+                                    _vm._v(
+                                      _vm._s(
+                                        _vm.calcSaldo(
+                                          item.months,
+                                          item,
+                                          "valor"
+                                        )
+                                      )
+                                    )
+                                  ]),
                                   _vm._v(" "),
-                                  _c("td"),
+                                  _c("td", [
+                                    _vm._v(
+                                      _vm._s(
+                                        _vm.calcSaldo(
+                                          item.months,
+                                          item,
+                                          "brut_salario"
+                                        )
+                                      )
+                                    )
+                                  ]),
                                   _vm._v(" "),
-                                  _c("td"),
+                                  _c("td", [
+                                    _vm._v(
+                                      _vm._s(
+                                        _vm.calcSaldo(
+                                          item.months,
+                                          item,
+                                          "comissao"
+                                        )
+                                      )
+                                    )
+                                  ]),
                                   _vm._v(" "),
-                                  _c("td")
+                                  _c("td", [
+                                    _vm._v(
+                                      _vm._s(
+                                        _vm.calcSaldo(
+                                          item.months,
+                                          item,
+                                          "lucro"
+                                        )
+                                      )
+                                    )
+                                  ])
                                 ])
                               ],
                               2
