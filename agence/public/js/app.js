@@ -2055,6 +2055,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js")["default"];
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2103,7 +2119,10 @@ var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js")["d
       d_ano: null,
       d_mes: null,
       a_ano: null,
-      a_mes: null
+      a_mes: null,
+      viewData: null,
+      button: true,
+      progress: false
     };
   },
   methods: {
@@ -2126,22 +2145,28 @@ var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js")["d
 
       return this.formatCurrency(valor);
     },
-    viewValues: function viewValues() {
-      console.log(this.values);
-    },
-    relatorio: function relatorio() {
+    relatorio: function relatorio(view) {
       var _this = this;
 
+      this.progress = true;
+      this.viewData = 'x';
       var de = this.d_ano + '-' + this.d_mes + '-01';
       var a = this.a_ano + '-' + this.a_mes + '-31';
       axios.get('consultor/relatorio?data=' + this.values + '&de=' + de + '&a=' + a).then(function (res) {
         _this.items = res.data;
+        _this.viewData = view;
+        _this.progress = false;
       });
+    },
+    buttonsStatus: function buttonsStatus() {
+      if (this.values.length > 0 && this.d_ano != null && this.d_mes != null && this.a_ano != null && this.a_mes != null) {
+        this.button = false;
+      } else {
+        this.button = true;
+      }
     }
   },
-  computed: {
-    business: function business() {//return this.$store.state.user.business;
-    }
+  computed: {//
   },
   created: function created() {//
   },
@@ -2150,6 +2175,218 @@ var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js")["d
 
     axios.get('consultor/list').then(function (res) {
       _this2.consultores = res.data;
+    });
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/GraficaComponent.vue?vue&type=script&lang=js&":
+/*!***************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/GraficaComponent.vue?vue&type=script&lang=js& ***!
+  \***************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['items', 'mes'],
+  data: function data() {
+    return {
+      sets: [],
+      labels: [],
+      media: [],
+      meses: ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
+    };
+  },
+  methods: {
+    graficoData: function graficoData() {
+      for (var x = 0; x < Number(this.mes); x++) {
+        this.labels.push(this.meses[x]);
+      }
+
+      for (var i in this.items) {
+        this.sets.push({
+          label: this.items[i].no_usuario,
+          data: this.receitaLiquida(this.labels, this.items[i].months),
+          backgroundColor: this.getColor()
+        });
+      }
+    },
+    receitaLiquida: function receitaLiquida(labels, months) {
+      var result = [];
+
+      for (var i in labels) {
+        var value = months[labels[i]] ? months[labels[i]].valor : 0;
+        result.push(value);
+      }
+
+      return result;
+    },
+    mediaCustoFixo: function mediaCustoFixo() {
+      var sum = 0;
+
+      for (var i in this.items) {
+        sum += this.items[i].brut_salario;
+      }
+
+      var media = sum / this.items.length;
+
+      for (var x = 0; x < this.labels.length; x++) {
+        this.media.push(media);
+      }
+    },
+    getColor: function getColor() {
+      var r = Math.round(Math.random() * 255);
+      var g = Math.round(Math.random() * 200);
+      var b = Math.round(Math.random() * 150);
+      return 'rgba(' + r + ',' + g + ',' + b + ',0.5)';
+    }
+  },
+  mounted: function mounted() {
+    this.graficoData();
+    this.mediaCustoFixo();
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var mixedChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        datasets: [].concat(_toConsumableArray(this.sets), [{
+          backgroundColor: 'rgba(255,255,255,0)',
+          borderColor: 'rgb(255,0,0)',
+          label: 'Custo Fixo Medio',
+          data: this.media,
+          // Changes this dataset to become a line
+          type: 'line'
+        }]),
+        labels: this.labels
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        },
+        tooltips: {
+          callbacks: {
+            label: function label(tooltipItem, data) {
+              var label = data.datasets[tooltipItem.datasetIndex].label || '';
+
+              if (label) {
+                label += ': ';
+              } //label += Math.round(tooltipItem.yLabel * 100) / 100;
+
+
+              label += Intl.NumberFormat("pt-BR", {
+                style: 'currency',
+                currency: 'BRL'
+              }).format(tooltipItem.yLabel);
+              return label;
+            }
+          }
+        }
+      }
+    });
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PizzaComponent.vue?vue&type=script&lang=js&":
+/*!*************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/PizzaComponent.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['items'],
+  data: function data() {
+    return {
+      labels: [],
+      colors: [],
+      valor: [],
+      total: 0
+    };
+  },
+  methods: {
+    pizzaData: function pizzaData() {
+      for (var i in this.items) {
+        this.labels.push(this.items[i].no_usuario), this.colors.push(this.getColor()), this.valor.push(this.getParticipao(this.items[i].months));
+      }
+    },
+    getColor: function getColor() {
+      var r = Math.round(Math.random() * 255);
+      var g = Math.round(Math.random() * 200);
+      var b = Math.round(Math.random() * 150);
+      return 'rgba(' + r + ',' + g + ',' + b + ',0.5)';
+    },
+    getParticipao: function getParticipao(months) {
+      var value = 0;
+
+      for (var x in months) {
+        value += months[x].valor;
+      }
+
+      return value;
+    }
+  },
+  mounted: function mounted() {
+    this.pizzaData();
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myPieChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        datasets: [{
+          data: this.valor,
+          backgroundColor: this.colors
+        }],
+        labels: this.labels
+      },
+      options: {
+        tooltips: {
+          callbacks: {
+            label: function label(tooltipItem, data) {
+              //data.datasets[0].data[tooltipItem.index]
+              var total = 0;
+              data.datasets[0].data.forEach(function (e) {
+                total += e;
+              }); //var percentage = Math.round((data.datasets[0].data[tooltipItem.index]*100)/total);
+
+              var percentage = numeral(data.datasets[0].data[tooltipItem.index] * 100 / total).format('0,0.00');
+              return data.labels[tooltipItem.index] + ': ' + percentage + '%';
+            }
+          }
+        }
+      }
     });
   }
 });
@@ -3290,11 +3527,7 @@ var render = function() {
                   "item-value": "co_usuario",
                   multiple: ""
                 },
-                on: {
-                  change: function($event) {
-                    return _vm.viewValues()
-                  }
-                },
+                on: { change: _vm.buttonsStatus },
                 model: {
                   value: _vm.values,
                   callback: function($$v) {
@@ -3332,6 +3565,7 @@ var render = function() {
                           "item-value": "num",
                           label: "mês"
                         },
+                        on: { change: _vm.buttonsStatus },
                         model: {
                           value: _vm.d_mes,
                           callback: function($$v) {
@@ -3358,6 +3592,7 @@ var render = function() {
                           items: [2007, 2006, 2005, 2004, 2003],
                           label: "ano"
                         },
+                        on: { change: _vm.buttonsStatus },
                         model: {
                           value: _vm.d_ano,
                           callback: function($$v) {
@@ -3395,6 +3630,7 @@ var render = function() {
                           "item-value": "num",
                           label: "mês"
                         },
+                        on: { change: _vm.buttonsStatus },
                         model: {
                           value: _vm.a_mes,
                           callback: function($$v) {
@@ -3421,6 +3657,7 @@ var render = function() {
                           items: [2007, 2006, 2005, 2004, 2003],
                           label: "ano"
                         },
+                        on: { change: _vm.buttonsStatus },
                         model: {
                           value: _vm.a_ano,
                           callback: function($$v) {
@@ -3443,10 +3680,14 @@ var render = function() {
                   _c(
                     "v-btn",
                     {
-                      attrs: { small: "", color: "primary" },
+                      attrs: {
+                        small: "",
+                        color: "primary",
+                        disabled: _vm.button
+                      },
                       on: {
                         click: function($event) {
-                          return _vm.relatorio()
+                          return _vm.relatorio("relatorio")
                         }
                       }
                     },
@@ -3456,10 +3697,14 @@ var render = function() {
                   _c(
                     "v-btn",
                     {
-                      attrs: { small: "", color: "primary" },
+                      attrs: {
+                        small: "",
+                        color: "primary",
+                        disabled: _vm.button
+                      },
                       on: {
                         click: function($event) {
-                          return _vm.relatorio()
+                          return _vm.relatorio("grafico")
                         }
                       }
                     },
@@ -3469,10 +3714,14 @@ var render = function() {
                   _c(
                     "v-btn",
                     {
-                      attrs: { small: "", color: "primary" },
+                      attrs: {
+                        small: "",
+                        color: "primary",
+                        disabled: _vm.button
+                      },
                       on: {
                         click: function($event) {
-                          return _vm.relatorio()
+                          return _vm.relatorio("pizza")
                         }
                       }
                     },
@@ -3482,151 +3731,173 @@ var render = function() {
                 1
               ),
               _vm._v(" "),
+              _vm.progress
+                ? _c("v-progress-linear", {
+                    attrs: { indeterminate: "", color: "primary" }
+                  })
+                : _vm._e(),
+              _vm._v(" "),
               _vm._l(_vm.items, function(item) {
-                return _c("v-simple-table", {
-                  key: item.no_usuario,
-                  attrs: { dense: "" },
-                  scopedSlots: _vm._u(
-                    [
-                      {
-                        key: "default",
-                        fn: function() {
-                          return [
-                            _c("thead", [
-                              _c(
-                                "tr",
-                                {
-                                  staticStyle: {
-                                    "background-color": "rgb(226, 220, 220)"
-                                  }
-                                },
-                                [
-                                  _c("td", { attrs: { colspan: "5" } }, [
-                                    _vm._v(_vm._s(item.no_usuario))
-                                  ])
-                                ]
-                              ),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("td", [_vm._v("Periodo")]),
-                                _vm._v(" "),
-                                _c("td", { staticClass: "text-left" }, [
-                                  _vm._v("Receita Líquida")
-                                ]),
-                                _vm._v(" "),
-                                _c("td", { staticClass: "text-left" }, [
-                                  _vm._v("Custo fixo")
-                                ]),
-                                _vm._v(" "),
-                                _c("td", { staticClass: "text-left" }, [
-                                  _vm._v("Comissao")
-                                ]),
-                                _vm._v(" "),
-                                _c("td", { staticClass: "text-left" }, [
-                                  _vm._v("Lucro")
-                                ])
-                              ])
-                            ]),
-                            _vm._v(" "),
-                            _c(
-                              "tbody",
-                              [
-                                _vm._l(item.months, function(i, index) {
-                                  return _c("tr", [
-                                    _c("td", [_vm._v(_vm._s(index))]),
+                return _vm.viewData === "relatorio"
+                  ? _c("v-simple-table", {
+                      key: item.no_usuario,
+                      attrs: { dense: "" },
+                      scopedSlots: _vm._u(
+                        [
+                          {
+                            key: "default",
+                            fn: function() {
+                              return [
+                                _c("thead", [
+                                  _c(
+                                    "tr",
+                                    {
+                                      staticStyle: {
+                                        "background-color": "rgb(226, 220, 220)"
+                                      }
+                                    },
+                                    [
+                                      _c("td", { attrs: { colspan: "5" } }, [
+                                        _vm._v(_vm._s(item.no_usuario))
+                                      ])
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c("tr", [
+                                    _c("td", [_vm._v("Periodo")]),
                                     _vm._v(" "),
-                                    _c("td", [
-                                      _vm._v(
-                                        _vm._s(_vm.formatCurrency(i.valor))
-                                      )
+                                    _c("td", { staticClass: "text-left" }, [
+                                      _vm._v("Receita Líquida")
                                     ]),
                                     _vm._v(" "),
-                                    _c("td", [
-                                      _vm._v(
-                                        _vm._s(
-                                          _vm.formatCurrency(item.brut_salario)
-                                        )
-                                      )
+                                    _c("td", { staticClass: "text-left" }, [
+                                      _vm._v("Custo fixo")
                                     ]),
                                     _vm._v(" "),
-                                    _c("td", [
-                                      _vm._v(
-                                        _vm._s(_vm.formatCurrency(i.comissao))
-                                      )
+                                    _c("td", { staticClass: "text-left" }, [
+                                      _vm._v("Comissao")
                                     ]),
                                     _vm._v(" "),
-                                    _c("td", [
-                                      _vm._v(
-                                        _vm._s(_vm.formatCurrency(i.lucro))
-                                      )
+                                    _c("td", { staticClass: "text-left" }, [
+                                      _vm._v("Lucro")
                                     ])
                                   ])
-                                }),
+                                ]),
                                 _vm._v(" "),
-                                _c("tr", [
-                                  _c("td", [_vm._v("SALDO")]),
-                                  _vm._v(" "),
-                                  _c("td", [
-                                    _vm._v(
-                                      _vm._s(
-                                        _vm.calcSaldo(
-                                          item.months,
-                                          item,
-                                          "valor"
+                                _c(
+                                  "tbody",
+                                  [
+                                    _vm._l(item.months, function(i, index) {
+                                      return _c("tr", [
+                                        _c("td", [_vm._v(_vm._s(index))]),
+                                        _vm._v(" "),
+                                        _c("td", [
+                                          _vm._v(
+                                            _vm._s(_vm.formatCurrency(i.valor))
+                                          )
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("td", [
+                                          _vm._v(
+                                            _vm._s(
+                                              _vm.formatCurrency(
+                                                item.brut_salario
+                                              )
+                                            )
+                                          )
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("td", [
+                                          _vm._v(
+                                            _vm._s(
+                                              _vm.formatCurrency(i.comissao)
+                                            )
+                                          )
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("td", [
+                                          _vm._v(
+                                            _vm._s(_vm.formatCurrency(i.lucro))
+                                          )
+                                        ])
+                                      ])
+                                    }),
+                                    _vm._v(" "),
+                                    _c("tr", [
+                                      _c("td", [_vm._v("SALDO")]),
+                                      _vm._v(" "),
+                                      _c("td", [
+                                        _vm._v(
+                                          _vm._s(
+                                            _vm.calcSaldo(
+                                              item.months,
+                                              item,
+                                              "valor"
+                                            )
+                                          )
                                         )
-                                      )
-                                    )
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("td", [
-                                    _vm._v(
-                                      _vm._s(
-                                        _vm.calcSaldo(
-                                          item.months,
-                                          item,
-                                          "brut_salario"
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("td", [
+                                        _vm._v(
+                                          _vm._s(
+                                            _vm.calcSaldo(
+                                              item.months,
+                                              item,
+                                              "brut_salario"
+                                            )
+                                          )
                                         )
-                                      )
-                                    )
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("td", [
-                                    _vm._v(
-                                      _vm._s(
-                                        _vm.calcSaldo(
-                                          item.months,
-                                          item,
-                                          "comissao"
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("td", [
+                                        _vm._v(
+                                          _vm._s(
+                                            _vm.calcSaldo(
+                                              item.months,
+                                              item,
+                                              "comissao"
+                                            )
+                                          )
                                         )
-                                      )
-                                    )
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("td", [
-                                    _vm._v(
-                                      _vm._s(
-                                        _vm.calcSaldo(
-                                          item.months,
-                                          item,
-                                          "lucro"
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("td", [
+                                        _vm._v(
+                                          _vm._s(
+                                            _vm.calcSaldo(
+                                              item.months,
+                                              item,
+                                              "lucro"
+                                            )
+                                          )
                                         )
-                                      )
-                                    )
-                                  ])
-                                ])
-                              ],
-                              2
-                            )
-                          ]
-                        },
-                        proxy: true
-                      }
-                    ],
-                    null,
-                    true
-                  )
-                })
-              })
+                                      ])
+                                    ])
+                                  ],
+                                  2
+                                )
+                              ]
+                            },
+                            proxy: true
+                          }
+                        ],
+                        null,
+                        true
+                      )
+                    })
+                  : _vm._e()
+              }),
+              _vm._v(" "),
+              _vm.viewData === "grafico"
+                ? _c("grafica-component", {
+                    attrs: { items: _vm.items, mes: _vm.a_mes }
+                  })
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.viewData === "pizza"
+                ? _c("pizza-component", { attrs: { items: _vm.items } })
+                : _vm._e()
             ],
             2
           )
@@ -3638,6 +3909,68 @@ var render = function() {
   )
 }
 var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/GraficaComponent.vue?vue&type=template&id=17137ff1&":
+/*!*******************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/GraficaComponent.vue?vue&type=template&id=17137ff1& ***!
+  \*******************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm._m(0)
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [_c("canvas", { attrs: { id: "myChart" } })])
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PizzaComponent.vue?vue&type=template&id=8eda9c00&":
+/*!*****************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/PizzaComponent.vue?vue&type=template&id=8eda9c00& ***!
+  \*****************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm._m(0)
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [_c("canvas", { attrs: { id: "myChart" } })])
+  }
+]
 render._withStripped = true
 
 
@@ -59549,6 +59882,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vuetify__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./vuetify */ "./resources/js/vuetify/index.js");
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 Vue.component('consultor-component', __webpack_require__(/*! ./components/ConsultorComponent.vue */ "./resources/js/components/ConsultorComponent.vue")["default"]);
+Vue.component('grafica-component', __webpack_require__(/*! ./components/GraficaComponent.vue */ "./resources/js/components/GraficaComponent.vue")["default"]);
+Vue.component('pizza-component', __webpack_require__(/*! ./components/PizzaComponent.vue */ "./resources/js/components/PizzaComponent.vue")["default"]);
 
 var app = new Vue({
   vuetify: _vuetify__WEBPACK_IMPORTED_MODULE_0__["default"],
@@ -59621,6 +59956,144 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ConsultorComponent_vue_vue_type_template_id_2ae47999___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ConsultorComponent_vue_vue_type_template_id_2ae47999___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/GraficaComponent.vue":
+/*!******************************************************!*\
+  !*** ./resources/js/components/GraficaComponent.vue ***!
+  \******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _GraficaComponent_vue_vue_type_template_id_17137ff1___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./GraficaComponent.vue?vue&type=template&id=17137ff1& */ "./resources/js/components/GraficaComponent.vue?vue&type=template&id=17137ff1&");
+/* harmony import */ var _GraficaComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./GraficaComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/GraficaComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _GraficaComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _GraficaComponent_vue_vue_type_template_id_17137ff1___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _GraficaComponent_vue_vue_type_template_id_17137ff1___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/GraficaComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/GraficaComponent.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************!*\
+  !*** ./resources/js/components/GraficaComponent.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GraficaComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./GraficaComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/GraficaComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GraficaComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/GraficaComponent.vue?vue&type=template&id=17137ff1&":
+/*!*************************************************************************************!*\
+  !*** ./resources/js/components/GraficaComponent.vue?vue&type=template&id=17137ff1& ***!
+  \*************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_GraficaComponent_vue_vue_type_template_id_17137ff1___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./GraficaComponent.vue?vue&type=template&id=17137ff1& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/GraficaComponent.vue?vue&type=template&id=17137ff1&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_GraficaComponent_vue_vue_type_template_id_17137ff1___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_GraficaComponent_vue_vue_type_template_id_17137ff1___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/PizzaComponent.vue":
+/*!****************************************************!*\
+  !*** ./resources/js/components/PizzaComponent.vue ***!
+  \****************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _PizzaComponent_vue_vue_type_template_id_8eda9c00___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./PizzaComponent.vue?vue&type=template&id=8eda9c00& */ "./resources/js/components/PizzaComponent.vue?vue&type=template&id=8eda9c00&");
+/* harmony import */ var _PizzaComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PizzaComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/PizzaComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _PizzaComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _PizzaComponent_vue_vue_type_template_id_8eda9c00___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _PizzaComponent_vue_vue_type_template_id_8eda9c00___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/PizzaComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/PizzaComponent.vue?vue&type=script&lang=js&":
+/*!*****************************************************************************!*\
+  !*** ./resources/js/components/PizzaComponent.vue?vue&type=script&lang=js& ***!
+  \*****************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_PizzaComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./PizzaComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PizzaComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_PizzaComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/PizzaComponent.vue?vue&type=template&id=8eda9c00&":
+/*!***********************************************************************************!*\
+  !*** ./resources/js/components/PizzaComponent.vue?vue&type=template&id=8eda9c00& ***!
+  \***********************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PizzaComponent_vue_vue_type_template_id_8eda9c00___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./PizzaComponent.vue?vue&type=template&id=8eda9c00& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PizzaComponent.vue?vue&type=template&id=8eda9c00&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PizzaComponent_vue_vue_type_template_id_8eda9c00___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PizzaComponent_vue_vue_type_template_id_8eda9c00___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

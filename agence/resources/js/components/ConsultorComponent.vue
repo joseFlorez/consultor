@@ -12,6 +12,7 @@
       </v-app-bar>
         <v-main>
         <v-container>
+
         <v-autocomplete
             v-model="values"
             :items="consultores"
@@ -22,7 +23,7 @@
             item-text="no_usuario"
             item-value="co_usuario"
             multiple
-            @change="viewValues()"
+            @change="buttonsStatus"
         ></v-autocomplete>
         
         <v-row>
@@ -46,6 +47,7 @@
                     item-text="text"
                     item-value="num"
                     label="mês"
+                    @change="buttonsStatus"
                 ></v-select>
             </v-col>
             <v-col
@@ -59,6 +61,7 @@
                     dense
                     :items="[2007, 2006, 2005, 2004, 2003]"
                     label="ano"
+                    @change="buttonsStatus"
                 ></v-select>
             </v-col>
             <v-col
@@ -81,6 +84,7 @@
                     item-text="text"
                     item-value="num"
                     label="mês"
+                    @change="buttonsStatus"
                 ></v-select>
             </v-col>
             <v-col
@@ -94,17 +98,25 @@
                     dense
                     :items="[2007, 2006, 2005, 2004, 2003]"
                     label="ano"
+                    @change="buttonsStatus"
                 ></v-select>
             </v-col>
         </v-row>
         
         <div class="my-2">
-                <v-btn @click="relatorio()" small color="primary">Relatório</v-btn>
-                <v-btn @click="relatorio()" small color="primary">Gráfico</v-btn>
-                <v-btn @click="relatorio()" small color="primary">Pizza</v-btn>
+                <v-btn @click="relatorio('relatorio')" small color="primary" :disabled="button">Relatório</v-btn>
+                <v-btn @click="relatorio('grafico')" small color="primary" :disabled="button">Gráfico</v-btn>
+                <v-btn @click="relatorio('pizza')" small color="primary" :disabled="button">Pizza</v-btn>
         </div>
+
+        <v-progress-linear
+            indeterminate
+            color="primary"
+            v-if="progress"
+        ></v-progress-linear>
         
         <v-simple-table
+            v-if="viewData==='relatorio'"
             dense
             v-for="item in items"
             :key="item.no_usuario"
@@ -140,6 +152,10 @@
                 </tbody>
             </template>
         </v-simple-table>
+
+        <grafica-component v-if="viewData==='grafico'" :items="items" :mes="a_mes"></grafica-component>
+        <pizza-component v-if="viewData==='pizza'" :items="items"></pizza-component>
+
         </v-container>
         </v-main>
     </v-app>
@@ -171,7 +187,10 @@
           d_ano: null,
           d_mes: null,
           a_ano: null,
-          a_mes: null
+          a_mes: null,
+          viewData: null,
+          button: true,
+          progress: false
         }
       },
       methods: {
@@ -191,25 +210,38 @@
             }
             return this.formatCurrency(valor);
         },
-        viewValues: function()
+        
+        relatorio: function(view)
         {
-            console.log(this.values);
-        },
-        relatorio: function()
-        {
+            this.progress = true;
+            this.viewData = 'x';
             var de = this.d_ano + '-' + this.d_mes + '-01';
             var a  = this.a_ano + '-' + this.a_mes + '-31';
             axios.get('consultor/relatorio?data='+this.values+'&de='+de+'&a='+a)
             .then(res => {
                 this.items = res.data;
+                this.viewData = view;
+                this.progress = false;
             });
+        },
+
+        buttonsStatus: function() 
+        {
+          if(
+              this.values.length > 0 && 
+              this.d_ano != null && 
+              this.d_mes != null && 
+              this.a_ano != null &&  
+              this.a_mes != null
+            )  {
+                this.button = false;
+            } else {
+                this.button = true;
+            }
         }
       },
       computed: {
-        business: function() 
-        {
-          //return this.$store.state.user.business;
-        }
+        //
       },
       created: function() {
         //
