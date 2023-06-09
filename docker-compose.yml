@@ -26,10 +26,13 @@ services:
   phpmyadmin:
     image: "phpmyadmin/phpmyadmin"
     container_name: agence_phpmyadmin
-    links:
-      - db:db
+    #links:
+      #- db:db
     ports:
       - 8081:80
+    environment:
+      PMA_HOST: beytw25ay0hef9rcvw78-mysql.services.clever-cloud.com
+      PMA_PORT: 20669
   agence:
     build:
       context: .

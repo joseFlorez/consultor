@@ -163,6 +163,7 @@
   
   <script>
     const axios = require('axios').default;
+    const moment = require('moment');
 
     export default {
       data () {
@@ -215,8 +216,9 @@
         {
             this.progress = true;
             this.viewData = 'x';
+            var endDay = moment(this.a_ano+"-"+this.a_mes).endOf('month').format('DD');
             var de = this.d_ano + '-' + this.d_mes + '-01';
-            var a  = this.a_ano + '-' + this.a_mes + '-31';
+            var a  = this.a_ano + '-' + this.a_mes +'-'+ endDay;
             axios.get('consultor/relatorio?data='+this.values+'&de='+de+'&a='+a)
             .then(res => {
                 this.items = res.data;
